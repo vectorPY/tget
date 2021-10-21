@@ -6,8 +6,6 @@ from bs4 import BeautifulSoup
 import shutil
 import exceptions
 
-# TODO: Implement limit
-
 
 class Scraper: 
     def __init__(self, url: str, path: Path, limit: Optional[int]):
@@ -56,7 +54,10 @@ class Scraper:
         links = self.get_link_list()
         p = Path(self.path / self.get_thread_name())
         p.mkdir(parents=True, exist_ok=True)
-        for link in links:
+        for i, link in enumerate(links):
+            if self.limit and i == self.limit:
+                break
+
             print(f"Saving {link}...")
 
             r = requests.get(link, stream=True)
