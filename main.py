@@ -4,22 +4,23 @@ from typing import Optional
 from pathlib import Path
 from bs4 import BeautifulSoup
 import shutil
-
+import exceptions
 
 # TODO: Implement limit
 
 
 class Scraper: 
-    def __init__(self, url: str, path: Path, limit: Optional[int] = None):
+    def __init__(self, url: str, path: Path, limit: Optional[int]):
         """
         :param url: url of the thread (like this: https://boards.4chan.org/<board>/thread/<id>)
-        :param path: path wehere the folder for the media should ne created
+        :param path: path where the folder for the media should be created
         :param limit: media limit (only the given amount of data will be saved)
         """
         self.url = url
         self.limit = limit        
         self.path = path        
-        self.r = requests.get(self.url).content        
+        self.req = requests.get(self.url)
+        self.r = self.req.content
         self.soup = BeautifulSoup(self.r, "html.parser")
 
     def verify_url(self) -> bool:
@@ -27,6 +28,8 @@ class Scraper:
         checks if the url fits the normal pattern
         :return: depending on the result
         """
+        if self.req.status_code != 200:
+            raise exceptions.InvalidUrlException(f"{self.req.status_code} Error")
         s = self.url.split("/")
         if len(s) != 6 or s[4] != "thread" or not s[-1].isnumeric():
             return False
@@ -40,7 +43,7 @@ class Scraper:
             self.get_thread_name()
             return ["https:" + a["href"] for a in self.soup.find_all("a", href=True) if "i.4cdn.org" in a["href"]]
         else:
-            exit(-1)        
+            raise exceptions.InvalidUrlException("Please provide a valid 4chan url")
     
     def get_thread_name(self) -> str:
         title = str(self.soup.find("title")).split("-")[1].strip()
