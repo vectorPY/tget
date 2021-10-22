@@ -44,16 +44,24 @@ class Scraper:
             raise exceptions.InvalidUrlException("Please provide a valid 4chan url")
     
     def get_thread_name(self) -> str:
+        """returns the title of the selected thread"""
         title = str(self.soup.find("title")).split("-")[1].strip()
         return title.replace(" ", "_")
+    
+    def get_board(self) -> str:
+        """returns the board (e.g. /g/)"""
+        return self.url.split("/")[3]
 
     def save(self):
         """
         saves the images in the given folder
-        """
+        """ 
+        print(f"Board: /{self.get_board()}/")
+
         links = self.get_link_list()
         p = Path(self.path / self.get_thread_name())
         p.mkdir(parents=True, exist_ok=True)
+
         for i, link in enumerate(links):
             if self.limit and i == self.limit:
                 break
@@ -72,8 +80,8 @@ class Scraper:
 
 def main():
     parser = argparse.ArgumentParser(description='Download 4chan Threads')
-    parser.add_argument("--link", "-l", dest="link", type=str, help="The Link of the Thread")    
-    parser.add_argument("--limit", dest="limit", type=int, help="Media limiMedia limitt")    
+    parser.add_argument("--thread", "-t", dest="link", type=str, help="The Link of the Thread")    
+    parser.add_argument("--limit", "-l", dest="limit", type=int, help="Media limiMedia limitt")    
     parser.add_argument(
         "--output", "-o", 
         dest="path", 
