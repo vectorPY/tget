@@ -24,7 +24,7 @@ class Scraper:
     def verify_url(self) -> bool:
         """
         checks if the url fits the normal pattern
-        :return: depending on the result
+        :return: a bool depending on the validity of the url
         """
         if self.req.status_code != 200:
             raise exceptions.InvalidUrlException(f"{self.req.status_code} Error")
