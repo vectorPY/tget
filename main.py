@@ -11,7 +11,7 @@ class Scraper:
     def __init__(self, url: str, path: Path, limit: Optional[int]):
         """
         :param url: url of the thread (like this: https://boards.4chan.org/<board>/thread/<id>)
-        :param path: path where the folder for the media should be created
+        :param path: path to the location where the folder for the media should be created
         :param limit: media limit (only the given amount of data will be saved)
         """
         self.url = url
